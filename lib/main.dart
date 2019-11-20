@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:application/model.dart';
+import 'package:application/vistas/todo.dart';
 
 void main() => runApp(MyApp());
 
@@ -7,84 +9,77 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Aplicacion de Juan',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
+  MyHomePage({Key key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  final databaseReference = FirebaseDatabase.instance.reference();
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  void createRecord(){
-    databaseReference.child("1").set({
-      'title': 'Mastering EJB',
-      'description': 'Programming Guide for J2EE'
-    });
-  }
-
-  void getData(){
-    databaseReference.once().then((DataSnapshot snapshot) {
-      print(snapshot.value);
-    });
-  }
-
-  void updateData(){
-    databaseReference.child('1').update({
-      'description': 'SKEREE'
-    });
-  }
-
+  List<Categoria> listaCategorias = List<Categoria>();
 
   @override
   Widget build(BuildContext context) {
-    createRecord();
-    getData();
-    updateData();
-    getData();
-
+    listaCategorias.clear();
+    Future<DataSnapshot> databaseReference =
+        FirebaseDatabase.instance.reference().once();
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text("Notas"),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
+      body: Container(
+        child: FutureBuilder(
+          future: databaseReference.then((DataSnapshot snapshot) {
+            snapshot.value.forEach((key, value) {
+              listaCategorias.add(Categoria(key));
+            });
+          }),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return ListView.builder(
+                  itemCount: listaCategorias.length,
+                  itemBuilder: (BuildContext ctxt, int index) {
+                    return Container(
+                      margin: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        border: Border.all(),
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      ),
+                      child: ListTile(
+                        title: Text(
+                            listaCategorias[index].titulo[0].toUpperCase() +
+                                listaCategorias[index].titulo.substring(1)),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ToDoPage(
+                                child: listaCategorias[index].titulo,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  });
+            }
+            return Center(
+              child: Container(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          },
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
       ),
     );
   }
