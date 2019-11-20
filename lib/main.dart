@@ -49,26 +49,36 @@ class _MyHomePageState extends State<MyHomePage> {
               return ListView.builder(
                   itemCount: listaCategorias.length,
                   itemBuilder: (BuildContext ctxt, int index) {
-                    return Container(
-                      margin: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      ),
-                      child: ListTile(
-                        title: Text(
-                            listaCategorias[index].titulo[0].toUpperCase() +
-                                listaCategorias[index].titulo.substring(1)),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ToDoPage(
-                                child: listaCategorias[index].titulo,
+                    return Dismissible(
+                      key: Key(index.toString()),
+                      background: Container(color: Colors.red),
+                      onDismissed: (direction) {
+                        FirebaseDatabase.instance
+                            .reference()
+                            .child((listaCategorias[index].titulo).toString())
+                            .remove();
+                      },
+                      child: Container(
+                        margin: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        ),
+                        child: ListTile(
+                          title: Text(
+                              listaCategorias[index].titulo[0].toUpperCase() +
+                                  listaCategorias[index].titulo.substring(1)),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ToDoPage(
+                                  child: listaCategorias[index].titulo,
+                                ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     );
                   });
