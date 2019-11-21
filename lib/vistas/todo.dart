@@ -36,7 +36,10 @@ class _ToDoPageState extends State<ToDoPage> {
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
                       child: ListTile(
-                        title: Text(listaItems[index].texto),
+                        title: Text(
+                          (listaItems[index].texto[0].toUpperCase() +
+                              listaItems[index].texto.substring(1)),
+                        ),
                       ),
                     );
                   });
