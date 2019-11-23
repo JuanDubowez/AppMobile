@@ -47,6 +47,11 @@ class _CategoryPageState extends State<CategoryPage> {
             Container(
               padding: EdgeInsets.all(10),
               child: TextFormField(
+                onTap: null,
+                onChanged: null,
+                onEditingComplete: null,
+                onFieldSubmitted: null,
+                onSaved: null,
                 controller: myController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
