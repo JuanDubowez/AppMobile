@@ -20,6 +20,7 @@ class _PaginaCreaciState extends State<PaginaCreacion> {
 
   _agregar() {
     if (myController.value.text != null && myController.value.text.isNotEmpty) {
+      Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(

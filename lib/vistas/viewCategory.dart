@@ -32,7 +32,6 @@ class _CategoryPageState extends State<CategoryPage> {
           .child(id)
           .set(txt);
     }
-    print(txt);
     setState(() {});
     Navigator.pop(context);
   }
@@ -55,6 +54,10 @@ class _CategoryPageState extends State<CategoryPage> {
             Container(
               padding: EdgeInsets.all(10),
               child: TextFormField(
+                textInputAction: TextInputAction.send,
+                onFieldSubmitted: (String value) {
+                  _agregar();
+                },
                 controller: myController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -71,7 +74,6 @@ class _CategoryPageState extends State<CategoryPage> {
               future: databaseReference.then((DataSnapshot snapshot) {
                 snapshot.value.forEach((key, value) {
                   listaItems.add(Item(key, value));
-                  print(key + " " + value);
                 });
               }),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
