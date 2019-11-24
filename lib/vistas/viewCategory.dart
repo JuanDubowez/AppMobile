@@ -11,14 +11,7 @@ class CategoryPage extends StatefulWidget {
 }
 
 class _CategoryPageState extends State<CategoryPage> {
-  List<Item> listaItems = List<Item>();
   final myController = TextEditingController();
-
-  @override
-  void dispose() {
-    myController.dispose();
-    super.dispose();
-  }
 
   _agregar() {
     if (myController.value.text != null && myController.value.text.isNotEmpty) {
@@ -31,11 +24,26 @@ class _CategoryPageState extends State<CategoryPage> {
     setState(() {});
   }
 
+  _editar(String id, String txt) {
+    if (txt != null && txt.isNotEmpty) {
+      FirebaseDatabase.instance
+          .reference()
+          .child(widget.category)
+          .child(id)
+          .set(txt);
+    }
+    print(txt);
+    setState(() {});
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    listaItems.clear();
     Future<DataSnapshot> databaseReference =
         FirebaseDatabase.instance.reference().child(widget.category).once();
+
+    List<Item> listaItems = List<Item>();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -47,11 +55,6 @@ class _CategoryPageState extends State<CategoryPage> {
             Container(
               padding: EdgeInsets.all(10),
               child: TextFormField(
-                onTap: null,
-                onChanged: null,
-                onEditingComplete: null,
-                onFieldSubmitted: null,
-                onSaved: null,
                 controller: myController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -76,12 +79,37 @@ class _CategoryPageState extends State<CategoryPage> {
                     return Expanded(
                       child: ListView.builder(
                           itemCount: listaItems.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              child: ListTile(
-                                title: Text(
-                                  (listaItems[index].texto[0].toUpperCase() +
-                                      listaItems[index].texto.substring(1)),
+                          itemBuilder: (BuildContext ctx, int index) {
+                            return GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: new Text("Editar item"),
+                                      content: Container(
+                                        child: TextFormField(
+                                          initialValue: listaItems[index].texto,
+                                          textInputAction: TextInputAction.send,
+                                          onFieldSubmitted: (String value) {
+                                            _editar(listaItems[index].id, value);
+                                          },
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: 'Texto',
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              child: Container(
+                                child: ListTile(
+                                  title: Text(
+                                    (listaItems[index].texto[0].toUpperCase() +
+                                        listaItems[index].texto.substring(1)),
+                                  ),
                                 ),
                               ),
                             );
@@ -103,5 +131,11 @@ class _CategoryPageState extends State<CategoryPage> {
       ),
       resizeToAvoidBottomPadding: true,
     );
+  }
+
+  @override
+  void dispose() {
+    myController.dispose();
+    super.dispose();
   }
 }

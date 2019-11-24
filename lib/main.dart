@@ -27,8 +27,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Categoria> listaCategorias = List<Categoria>();
-
   void _showDialog() {
     showDialog(
       context: context,
@@ -48,9 +46,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    listaCategorias.clear();
     Future<DataSnapshot> databaseReference =
         FirebaseDatabase.instance.reference().once();
+
+    List<Categoria> listaCategorias = List<Categoria>();
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
