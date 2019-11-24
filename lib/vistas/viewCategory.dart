@@ -40,7 +40,7 @@ class _CategoryPageState extends State<CategoryPage> {
   @override
   Widget build(BuildContext context) {
     Future<DataSnapshot> databaseReference =
-        FirebaseDatabase.instance.reference().child(widget.category).once();
+        FirebaseDatabase.instance.reference().child(widget.category).orderByKey().once();
 
     List<Item> listaItems = List<Item>();
 
@@ -71,9 +71,11 @@ class _CategoryPageState extends State<CategoryPage> {
               future: databaseReference.then((DataSnapshot snapshot) {
                 snapshot.value.forEach((key, value) {
                   listaItems.add(Item(key, value));
+                  print(key + " " + value);
                 });
               }),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
+                listaItems.sort((Item a, Item b)=>a.id.compareTo(b.id));
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (listaItems.isNotEmpty) {
                     return Expanded(
