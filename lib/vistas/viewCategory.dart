@@ -84,35 +84,46 @@ class _CategoryPageState extends State<CategoryPage> {
                       child: ListView.builder(
                           itemCount: listaItems.length,
                           itemBuilder: (BuildContext ctx, int index) {
-                            return GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: new Text("Editar item"),
-                                      content: Container(
-                                        child: TextFormField(
-                                          initialValue: listaItems[index].texto,
-                                          textInputAction: TextInputAction.send,
-                                          onFieldSubmitted: (String value) {
-                                            _editar(listaItems[index].id, value);
-                                          },
-                                          decoration: InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Texto',
+                            return Dismissible(
+                              direction: DismissDirection.endToStart,
+                              key: Key(index.toString()),
+                              background: Container(color: Colors.red),
+                              onDismissed: (direction) {
+                                FirebaseDatabase.instance
+                                    .reference().child(widget.category)
+                                    .child((listaItems[index].id).toString())
+                                    .remove();
+                              },
+                              child: GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: new Text("Editar item"),
+                                        content: Container(
+                                          child: TextFormField(
+                                            initialValue: listaItems[index].texto,
+                                            textInputAction: TextInputAction.send,
+                                            onFieldSubmitted: (String value) {
+                                              _editar(listaItems[index].id, value);
+                                            },
+                                            decoration: InputDecoration(
+                                              border: OutlineInputBorder(),
+                                              labelText: 'Texto',
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                              child: Container(
-                                child: ListTile(
-                                  title: Text(
-                                    (listaItems[index].texto[0].toUpperCase() +
-                                        listaItems[index].texto.substring(1)),
+                                      );
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  child: ListTile(
+                                    title: Text(
+                                      (listaItems[index].texto[0].toUpperCase() +
+                                          listaItems[index].texto.substring(1)),
+                                    ),
                                   ),
                                 ),
                               ),
