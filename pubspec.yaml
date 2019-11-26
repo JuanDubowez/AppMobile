@@ -12,10 +12,14 @@ dependencies:
 
   firebase_database: ^3.0.2
 
+flutter_icons:
+  android: true
+  image_path: "lib/img/icono.png"
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.7.0"
 
 flutter:
-
   uses-material-design: true
