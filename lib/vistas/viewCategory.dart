@@ -38,8 +38,11 @@ class _CategoryPageState extends State<CategoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    Future<DataSnapshot> databaseReference =
-        FirebaseDatabase.instance.reference().child(widget.category).orderByKey().once();
+    Future<DataSnapshot> databaseReference = FirebaseDatabase.instance
+        .reference()
+        .child(widget.category)
+        .orderByKey()
+        .once();
 
     List<Item> listaItems = List<Item>();
 
@@ -65,6 +68,8 @@ class _CategoryPageState extends State<CategoryPage> {
                     icon: Icon(Icons.send),
                     onPressed: () {
                       _agregar();
+                      WidgetsBinding.instance.addPostFrameCallback(
+                              (_) => myController.clear());
                     },
                   ),
                 ),
@@ -77,7 +82,7 @@ class _CategoryPageState extends State<CategoryPage> {
                 });
               }),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
-                listaItems.sort((Item a, Item b)=>a.id.compareTo(b.id));
+                listaItems.sort((Item a, Item b) => a.id.compareTo(b.id));
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (listaItems.isNotEmpty) {
                     return Expanded(
@@ -87,46 +92,64 @@ class _CategoryPageState extends State<CategoryPage> {
                             return Dismissible(
                               direction: DismissDirection.endToStart,
                               key: Key(index.toString()),
-                              background: Container(color: Colors.red),
-                              onDismissed: (direction) {
-                                FirebaseDatabase.instance
-                                    .reference().child(widget.category)
-                                    .child((listaItems[index].id).toString())
-                                    .remove();
-                              },
-                              child: GestureDetector(
-                                onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: new Text("Editar item"),
-                                        content: Container(
-                                          child: TextFormField(
-                                            initialValue: listaItems[index].texto,
-                                            textInputAction: TextInputAction.send,
-                                            onFieldSubmitted: (String value) {
-                                              _editar(listaItems[index].id, value);
-                                            },
-                                            decoration: InputDecoration(
-                                              border: OutlineInputBorder(),
-                                              labelText: 'Texto',
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                                child: Container(
-                                  child: ListTile(
-                                    title: Text(
-                                      (listaItems[index].texto[0].toUpperCase() +
-                                          listaItems[index].texto.substring(1)),
-                                    ),
+                              background: Container(
+                              color: Colors.red,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Icon(Icons.delete_forever, size: 30,
+                                        color: Colors.white),
                                   ),
-                                ),
+                                ],
                               ),
+                            ),
+                            onDismissed: (direction) {
+                            FirebaseDatabase.instance
+                                .reference()
+                                .child(widget.category)
+                                .child((listaItems[index].id).toString())
+                                .remove();
+                            },
+                            child: GestureDetector(
+                            onTap: () {
+                            showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                            return AlertDialog(
+                            title: new Text("Editar item"),
+                            content: Container(
+                            child: TextFormField(
+                            initialValue:
+                            listaItems[index].texto,
+                            textInputAction:
+                            TextInputAction.send,
+                            onFieldSubmitted: (String value) {
+                            _editar(
+                            listaItems[index].id, value);
+                            },
+                            decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Texto',
+                            ),
+                            ),
+                            ),
+                            );
+                            },
+                            );
+                            },
+                            child: Container(
+                            child: ListTile(
+                            title: Text(
+                            (listaItems[index]
+                                .texto[0]
+                                .toUpperCase() +
+                            listaItems[index].texto.substring(1)),
+                            ),
+                            ),
+                            ),
+                            ),
                             );
                           }),
                     );
