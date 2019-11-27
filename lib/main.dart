@@ -70,7 +70,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     return Dismissible(
                       direction: DismissDirection.endToStart,
                       key: Key(index.toString()),
-                      background: Container(color: Colors.red),
+                      background: Container(
+                        color: Colors.red,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Icon(Icons.delete_forever, size: 30, color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
                       onDismissed: (direction) {
                         FirebaseDatabase.instance
                             .reference()
